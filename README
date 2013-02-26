@@ -1,0 +1,2 @@
+This script accepts a list of songs in the format "#{song_title} by #{artist_name} (#{popularity})" (this is the format outputted by TurntableTopSongs)
+For each song piped, the script searches the interweb and downloads the highest quality matching song
