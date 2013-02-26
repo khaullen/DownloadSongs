@@ -18,7 +18,7 @@ def parse_mp3_skull(search_term)
 	doc = Nokogiri::HTML(open(uri))
 	array = doc.css('div#song_html').map do |song_element|
 		hash = {}
-		hash[:name] = song_element.css('#right_song div b').first.content
+		hash[:name] = song_element.css('#right_song div b').first.content.chomp(" mp3")
 		hash[:uri] = song_element.css('#right_song a').first['href']
 		hash[:search_term] = search_term
 		hash.merge(parse_left_content(song_element.css('div.left').first.content))
@@ -44,8 +44,8 @@ end
 
 
 #puts parse_turntable
-#puts parse_mp3_skull('robert_francis_junebug')
-download_to_path(parse_mp3_skull('robert_francis_junebug'))
+puts parse_mp3_skull('robert_francis_junebug')
+#download_to_path(parse_mp3_skull('robert_francis_junebug'))
 
 
 
@@ -53,6 +53,8 @@ download_to_path(parse_mp3_skull('robert_francis_junebug'))
 # TODO
 # - calculate match fit by excluding extraneous terms in song name (remix)
 # - parse song time and size from left_content
-# - strip "mp3" from end of song name
 # - recover from errors and download next song in array
 # - url encoding for bad links
+# - accept argument for download path using ARGV
+# - accept argument for reading list of songs from file
+# - add threads for concurrent downloads?
