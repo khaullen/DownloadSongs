@@ -20,10 +20,10 @@ def parse_mp3_skull(search_term)
 		hash = {}
 		hash[:name] = song_element.css('#right_song div b').first.content.chomp(" mp3")
 		hash[:uri] = URI.escape(song_element.css('#right_song a').first['href'])
-		hash[:search_term] = search_term
+		hash[:extra_words] = hash[:name].scan(/\b/).size/2 - search_term.split("_").count
 		hash.merge(parse_left_content(song_element.css('div.left').first.content))
 	end
-	array.sort_by { |hash| hash[:quality] || 0 }.reverse!
+	array.sort_by { |hash| [hash[:extra_words], -(hash[:quality] || 0)] }
 end
 
 def parse_left_content(content)
@@ -56,8 +56,6 @@ puts parse_mp3_skull(search_string)
 
 
 # TODO
-# - calculate match fit by excluding extraneous terms in song name (remix)
-# - parse song time and size from left_content
 # - recover from errors and download next song in array
 # - accept argument for download path using ARGV
 # - accept argument for reading list of songs from file
