@@ -27,8 +27,13 @@ def parse_mp3_skull(search_term)
 end
 
 def parse_left_content(content)
-	match = content.match(/(\d+)\s*kbps/)
-	{:quality => match && match[1].to_i}
+	m = content.match(/(\d+)\s*kbps/)
+	kbps = m && m[1].to_i
+	m = content.match(/(?<hours>\d{1,2})?:?(?<minutes>\d{1,2}):(?<seconds>\d{2})/)
+	seconds = m && m[:seconds].to_i + m[:minutes].to_i * 60 + m[:hours].to_i * 60 * 60
+	m = content.match(/(?:\d:\d{2})?([\d\.]+) mb/)
+	mb = m && m[1].to_f
+	{:quality => kbps, :time => seconds, :size => mb}
 end
 
 def download_to_path(songs, path="~/Downloads")
@@ -44,8 +49,8 @@ end
 search_string = 'lcd_soundsystem_someone_great'
 
 #puts parse_turntable
-#puts parse_mp3_skull(search_string)
-download_to_path(parse_mp3_skull(search_string))
+puts parse_mp3_skull(search_string)
+#download_to_path(parse_mp3_skull(search_string))
 
 
 
