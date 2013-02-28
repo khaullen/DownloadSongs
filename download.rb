@@ -5,6 +5,7 @@ require 'open-uri'
 require 'optparse'
 
 def parse_turntable(songs=$stdin.readlines)
+	puts "Parsing Turntable.FM input..." if options[:verbose]
 	songs.map do |song|
 		song.sub!(/\s*\(\d+\)$/, '')
 		song.gsub!(/\W/, ' ')
@@ -15,8 +16,10 @@ def parse_turntable(songs=$stdin.readlines)
 end
 
 def parse_mp3_skull(search_term)
+	puts "Downloading search results for #{search_term}..." if options[:verbose]
 	uri = "http://mp3skull.com/mp3/#{search_term}.html"
 	doc = Nokogiri::HTML(open(uri))
+	puts "Parsing HTML..." if options[:verbose]
 	array = doc.css('div#song_html').map do |song_element|
 		hash = {}
 		hash[:name] = song_element.css('#right_song div b').first.content.chomp(" mp3")
@@ -40,6 +43,7 @@ end
 
 def download_to_path(songs, path="~/Downloads")
 	song = songs.shift
+	puts "Downloading #{song[:name]} from #{song[:uri]}..."
 	File.open(File.expand_path(song[:name] << ".mp3", path), "wb") do |saved_file|
 		open(song[:uri], 'rb') do |read_file|
 			saved_file.write(read_file.read)
@@ -83,18 +87,15 @@ end
 optparse.parse!
 
 puts "Verbose mode enabled" if options[:verbose]
-puts "Logging output to #{options[:log]}"
+puts "Logging output to #{options[:log]}" if options[:verbose]
 puts "Minimum quality: #{options[:quality]}kbps" if options[:quality] > 0
+puts "Search result for \"#{ARGV.last}\" will begin playing after download is complete" if options[:play]
 
 ARGV.each do |song|
 	puts song
 end
 	
-	
-
-#puts parse_turntable
-#puts parse_mp3_skull(search_string)
-#download_to_path(parse_mp3_skull(search_string))
+end
 
 
 
