@@ -5,13 +5,13 @@ require 'open-uri'
 require 'optparse'
 
 def parse_input_string(string)
-	string.gsub!(/\W/, ' ')					# Remove non-word characters
-	string.strip!										# Remove excess whitespace
-	string.gsub!(/\s+/, '_')				# Delimit terms with underscore
+	str = string.gsub(/\W/, ' ')					# Remove non-word characters
+	str.strip!														# Remove excess whitespace
+	str.gsub!(/\s+/, '_')									# Delimit terms with underscore
 end
 
 def parse_turntable(songs=$stdin.readlines)
-	puts "Parsing Turntable.FM input..." if options[:verbose]
+	puts "Parsing Turntable.FM input..." if $options[:verbose]
 	songs.map do |song|
 		song.sub!(/\s*\(\d+\)$/, '')											# Remove popularity index
 		parse_input_string(song).sub!('_by_', '_')				# Remove song/artist delimiter
@@ -19,10 +19,10 @@ def parse_turntable(songs=$stdin.readlines)
 end
 
 def parse_mp3_skull(search_term)
-	puts "Downloading search results for #{search_term}..." if options[:verbose]
+	puts "Downloading search results for #{search_term}..." if $options[:verbose]
 	uri = "http://mp3skull.com/mp3/#{search_term}.html"
 	doc = Nokogiri::HTML(open(uri))
-	puts "Parsing HTML..." if options[:verbose]
+	puts "Parsing HTML..." if $options[:verbose]
 	array = doc.css('div#song_html').map do |song_element|
 		hash = {}
 		hash[:name] = song_element.css('#right_song div b').first.content.chomp(" mp3")
@@ -30,7 +30,7 @@ def parse_mp3_skull(search_term)
 		hash[:extra_words] = hash[:name].scan(/\b/).size/2 - search_term.split("_").count
 		hash.merge(parse_left_content(song_element.css('div.left').first.content))
 	end
-	array.reject! { |hash| (hash[:quality] || 320) < options[:quality] }
+	array.reject! { |hash| (hash[:quality] || 320) < $options[:quality] }
 	array.sort_by { |hash| [hash[:extra_words], -(hash[:quality] || 0)] }
 end
 
@@ -55,29 +55,29 @@ def download_to_path(songs, path="~/Downloads")
 end
 
 
-options = {}
+$options = {}
 
 optparse = OptionParser.new do |opts|
 	opts.banner = "Usage: download.rb [options] song1 song2 ..."
 	
-	options[:play] = false
+	$options[:play] = false
 	opts.on( '-p', '--play', 'Play song after downloading' ) do
-		options[:play] = true
+		$options[:play] = true
 	end
 	
-	options[:quality] = 0
+	$options[:quality] = 0
 	opts.on( '-q', '--quality [KBPS]', Integer, 'Minimum quality mp3 in KBPS' ) do |kbps|
-		options[:quality] = kbps || 160
+		$options[:quality] = kbps || 160
 	end
 	
-	options[:verbose] = false
+	$options[:verbose] = false
 	opts.on( '-v', '--verbose', 'Output more information' ) do
-		options[:verbose] = true
+		$options[:verbose] = true
 	end
 	
-	options[:log] = "log.txt"
+	$options[:log] = "log.txt"
 	opts.on( '-l', '--logfile FILE', 'Write log to FILE' ) do |file|
-		options[:log] = file
+		$options[:log] = file
 	end
 	
 	opts.on( '-h', '--help', 'Display help' ) do
@@ -89,15 +89,20 @@ end
 
 optparse.parse!
 
-puts "Verbose mode enabled" if options[:verbose]
-puts "Logging output to #{options[:log]}" if options[:verbose]
-puts "Minimum quality: #{options[:quality]}kbps" if options[:quality] > 0
-puts "Search result for \"#{ARGV.last}\" will begin playing after download is complete" if options[:play]
+puts "Verbose mode enabled" if $options[:verbose]
+puts "Logging output to #{$options[:log]}" if $options[:verbose]
+puts "Minimum quality: #{$options[:quality]}kbps" if $options[:quality] > 0
+if ARGV.empty?
+	puts "ERROR: No search term specified!" 
+else
+	puts "Search result for \"#{ARGV.last}\" will begin playing after download is complete" if $options[:play]
+end
+
 
 ARGV.each do |song|
-	search_term = parse_input_string(song)
+	search_string = parse_input_string(song)
 	search_results = parse_mp3_skull(search_string)
-	
+	download_to_path(search_results)
 end
 
 
@@ -106,11 +111,9 @@ end
 # TODO
 # - automatically start playing song after download
 # - output download info to log file
-# - output activity to stdout
 # - add support for download progress viewer
 # - recover from errors and download next song in array
 # - accept argument for download path using ARGV
-# - accept argument for search string
 # - add threads for concurrent downloads?
 # - add songs to iTunes playlist
 
