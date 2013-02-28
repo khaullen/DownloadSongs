@@ -45,13 +45,19 @@ def parse_left_content(content)
 end
 
 def download_to_path(songs, path="~/Downloads")
-	song = songs.shift
-	puts "Song match: #{song[:name]}\nURL: #{song[:uri]}\nQuality: #{song[:quality]}kbps\nTime: #{song[:time]} seconds\nSize: #{song[:size]} mb" if song
-	File.open(File.expand_path(song[:name] << ".mp3", path), "wb") do |saved_file|
-		puts "Downloading..."
-		open(song[:uri], 'rb') do |read_file|
-			saved_file.write(read_file.read)
+	if song = songs.shift
+		puts "Song match: #{song[:name]}\nURL: #{song[:uri]}\nQuality: #{song[:quality]}kbps\nTime: #{song[:time]} seconds\nSize: #{song[:size]} mb"
+		file_path = File.expand_path(song[:name] << ".mp3", path)
+		File.open(file_path, "wb") do |saved_file|
+			puts "Downloading..."
+			open(song[:uri], 'rb') do |read_file|
+				saved_file.write(read_file.read)
+			end
 		end
+		file_path
+	else
+		puts "No matches found. Bummer."
+		exit
 	end
 end
 
