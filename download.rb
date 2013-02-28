@@ -4,14 +4,17 @@ require 'nokogiri'
 require 'open-uri'
 require 'optparse'
 
+def parse_input_string(string)
+	string.gsub!(/\W/, ' ')					# Remove non-word characters
+	string.strip!										# Remove excess whitespace
+	string.gsub!(/\s+/, '_')				# Delimit terms with underscore
+end
+
 def parse_turntable(songs=$stdin.readlines)
 	puts "Parsing Turntable.FM input..." if options[:verbose]
 	songs.map do |song|
-		song.sub!(/\s*\(\d+\)$/, '')
-		song.gsub!(/\W/, ' ')
-		song.strip!
-		song.gsub!(/\s+/, '_')
-		song.split('_by_')
+		song.sub!(/\s*\(\d+\)$/, '')											# Remove popularity index
+		parse_input_string(song).sub!('_by_', '_')				# Remove song/artist delimiter
 	end
 end
 
@@ -92,8 +95,8 @@ puts "Minimum quality: #{options[:quality]}kbps" if options[:quality] > 0
 puts "Search result for \"#{ARGV.last}\" will begin playing after download is complete" if options[:play]
 
 ARGV.each do |song|
-	puts song
-end
+	search_term = parse_input_string(song)
+	search_results = parse_mp3_skull(search_string)
 	
 end
 
