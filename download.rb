@@ -30,7 +30,7 @@ def parse_mp3_skull(search_term)
 		hash[:extra_words] = hash[:name].scan(/\b/).size/2 - search_term.split("_").count
 		hash.merge(parse_left_content(song_element.css('div.left').first.content))
 	end
-	array.reject! { |hash| (hash[:quality] || 160) < 160 }
+	array.reject! { |hash| (hash[:quality] || 320) < options[:quality] }
 	array.sort_by { |hash| [hash[:extra_words], -(hash[:quality] || 0)] }
 end
 
