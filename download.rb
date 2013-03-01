@@ -105,25 +105,24 @@ else
 	puts "Search result for \"#{ARGV.last}\" will begin playing after download is complete" if $options[:play]
 end
 
-
+$file_name = ""
 ARGV.each do |song|
 	search_string = parse_input_string(song)
 	search_results = parse_mp3_skull(search_string)
-	download_to_path(search_results)
+	$file_name = download_to_path(search_results)
 end
+
+system %{open "#{$file_name}"} if $options[:play]
 
 
 
 
 # TODO
-# - automatically start playing song after download
 # - output download info to log file
 # - add support for download progress viewer
 # - recover from errors and download next song in array
 # - accept argument for download path using ARGV
 # - add threads for concurrent downloads?
 # - add songs to iTunes playlist
-
-
-#file_to_open = "/path/to/file.txt"
-#system %{open "#{file_to_open}"}
+# - add dilandau.eu support
+# - streaming support
