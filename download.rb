@@ -30,6 +30,7 @@ def parse_mp3_skull(search_term)
 		hash[:extra_words] = hash[:name].scan(/\b/).size/2 - search_term.split("_").count
 		hash.merge(parse_left_content(song_element.css('div.left').first.content))
 	end
+	raise(ArgumentError, "No matches found for #{search_term}, bummer.") if array.empty?
 	array.reject! { |hash| (hash[:quality] || 320) < $options[:quality] }
 	array.sort_by { |hash| [hash[:extra_words], -(hash[:quality] || 0)] }
 end
@@ -45,19 +46,14 @@ def parse_left_content(content)
 end
 
 def download_to_path(songs, path="~/Downloads")
-	if song = songs.shift
-		puts "Song match: #{song[:name]}\nURL: #{song[:uri]}\nQuality: #{song[:quality]}kbps\nTime: #{song[:time]} seconds\nSize: #{song[:size]} mb"
-		file_path = File.expand_path(song[:name] << ".mp3", path)
-		File.open(file_path, "wb") do |saved_file|
-			puts "Downloading..."
-			open(song[:uri], 'rb') do |read_file|
-				saved_file.write(read_file.read)
-			end
+	song = songs.shift
+	puts "Song match: #{song[:name]}\nURL: #{song[:uri]}\nQuality: #{song[:quality]}kbps\nTime: #{song[:time]} seconds\nSize: #{song[:size]} mb"
+	File.open(File.expand_path(song[:name] << ".mp3", path), "wb") do |saved_file|
+		puts "Downloading..."
+		open(song[:uri], 'rb') do |read_file|
+			saved_file.write(read_file.read)
 		end
-		file_path
-	else
-		puts "No matches found. Bummer."
-		exit
+		saved_file.path
 	end
 end
 
@@ -96,14 +92,12 @@ end
 
 optparse.parse!
 
+raise(ArgumentError, "No search terms specified") if ARGV.empty?
 puts "Verbose mode enabled" if $options[:verbose]
 puts "Logging output to #{$options[:log]}" if $options[:verbose]
 puts "Minimum quality: #{$options[:quality]}kbps" if $options[:quality] > 0
-if ARGV.empty?
-	puts "ERROR: No search term specified!" 
-else
-	puts "Search result for \"#{ARGV.last}\" will begin playing after download is complete" if $options[:play]
-end
+puts "Search result for \"#{ARGV.last}\" will begin playing after download is complete" if $options[:play]
+
 
 $file_name = ""
 ARGV.each do |song|
@@ -127,3 +121,4 @@ end
 # - add songs to iTunes playlist
 # - add dilandau.eu support
 # - streaming support
+# - switch up search term order
