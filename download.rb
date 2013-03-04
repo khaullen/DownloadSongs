@@ -21,7 +21,13 @@ end
 def parse_mp3_skull(search_term)
 	puts "Downloading search results for #{search_term}..." if $options[:verbose]
 	uri = "http://mp3skull.com/mp3/#{search_term}.html"
-	doc = Nokogiri::HTML(open(uri))
+	
+	begin
+		doc = Nokogiri::HTML(open(uri))
+	rescue SocketError => error
+		raise(error, "Check your internet connection")
+	end
+	
 	puts "Parsing HTML..." if $options[:verbose]
 	array = doc.css('div#song_html').map do |song_element|
 		hash = {}
@@ -47,6 +53,7 @@ end
 
 def download_to_path(songs, path="~/Downloads")
 	song = songs.shift
+	raise(ArgumentError, "No matches left to try") if song.nil?
 	puts "Song match: #{song[:name]}\nURL: #{song[:uri]}\nQuality: #{song[:quality]}kbps\nTime: #{song[:time]} seconds\nSize: #{song[:size]} mb"
 	File.open(File.expand_path(song[:name] << ".mp3", path), "wb") do |saved_file|
 		puts "Downloading..."
@@ -55,6 +62,9 @@ def download_to_path(songs, path="~/Downloads")
 		end
 		saved_file.path
 	end
+rescue OpenURI::HTTPError => error
+	puts error.message, "Trying next song match..."
+	retry
 end
 
 
