@@ -112,7 +112,7 @@ ARGV.each do |song|
 	$file_name = download_to_path(search_results)
 end
 
-system %{open "#{$file_name}"} if $options[:play]
+`open "#{$file_name}"` if $options[:play]
 
 
 
@@ -120,6 +120,7 @@ system %{open "#{$file_name}"} if $options[:play]
 # TODO
 # - output download info to log file
 # - add support for download progress viewer
+# - restructure code, get rid of global variables
 # - recover from errors and download next song in array
 # - accept argument for download path using ARGV
 # - add threads for concurrent downloads?
