@@ -55,16 +55,21 @@ def download_to_path(songs, path="~/Downloads")
 	song = songs.shift
 	raise(ArgumentError, "No matches left to try") if song.nil?
 	puts "Song match: #{song[:name]}\nURL: #{song[:uri]}\nQuality: #{song[:quality]}kbps\nTime: #{song[:time]} seconds\nSize: #{song[:size]} mb"
-	File.open(File.expand_path(song[:name] << ".mp3", path), "wb") do |saved_file|
-		puts "Downloading..."
+	mp3_file = File.expand_path(song[:name] << ".mp3", path)
+	File.open(mp3_file, "wb") do |saved_file|
+		puts "Downloading to #{mp3_file}..."
 		open(song[:uri], 'rb') do |read_file|
 			saved_file.write(read_file.read)
 		end
-		saved_file.path
 	end
 rescue OpenURI::HTTPError => error
 	puts error.message, "Trying next song match..."
 	retry
+else
+	File.open($options[:log], "a") do |log|
+		log.puts(Time.now, "URL: #{song[:uri]}", "File: #{mp3_file}")
+	end
+	mp3_file
 end
 
 
@@ -122,7 +127,6 @@ end
 
 
 # TODO
-# - output download info to log file
 # - add support for download progress viewer
 # - restructure code, get rid of global variables
 # - accept argument for download path using ARGV
