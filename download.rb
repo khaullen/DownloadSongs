@@ -121,7 +121,19 @@ ARGV.each do |song|
 	$file_name = download_to_path(search_results)
 end
 
-`open "#{$file_name}"` if $options[:play]
+if $options[:play]
+	program = case `printf $(command -v afplay >/dev/null 2>&1)$?`
+						when "0"; "afplay"
+						else "open"
+						end
+	puts "Press Control-C to stop playback" if program == "afplay"
+	begin
+		`#{program} "#{$file_name}"`
+	rescue Interrupt
+		puts
+		exit
+	end
+end
 
 
 
