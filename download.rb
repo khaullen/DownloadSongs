@@ -51,11 +51,11 @@ def parse_left_content(content)
 	{:quality => kbps, :time => seconds, :size => mb}
 end
 
-def download_to_path(songs, path="~/Downloads")
+def download(songs)
 	song = songs.shift
 	raise(ArgumentError, "No matches left to try") if song.nil?
 	puts "Song match: #{song[:name]}\nURL: #{song[:uri]}\nQuality: #{song[:quality]}kbps\nTime: #{song[:time]} seconds\nSize: #{song[:size]} mb"
-	mp3_file = File.expand_path(song[:name] << ".mp3", path)
+	mp3_file = File.expand_path(song[:name] << ".mp3", $options[:path])
 	File.open(mp3_file, "wb") do |saved_file|
 		puts "Downloading to #{mp3_file}..."
 		open(song[:uri], 'rb') do |read_file|
@@ -98,6 +98,11 @@ optparse = OptionParser.new do |opts|
 		$options[:log] = file
 	end
 	
+	$options[:path] = "~/Downloads"
+	opts.on( '-d', '--path PATH', 'Save mp3 file to PATH' ) do |path|
+		$options[:path] = path
+	end
+	
 	opts.on( '-h', '--help', 'Display help' ) do
 		puts opts
 		exit
@@ -118,7 +123,7 @@ $file_name = ""
 ARGV.each do |song|
 	search_string = parse_input_string(song)
 	search_results = parse_mp3_skull(search_string)
-	$file_name = download_to_path(search_results)
+	$file_name = download(search_results)
 end
 
 if $options[:play]
@@ -141,7 +146,6 @@ end
 # TODO
 # - add support for download progress viewer
 # - restructure code, get rid of global variables
-# - accept argument for download path using ARGV
 # - add threads for concurrent downloads?
 # - add songs to iTunes playlist
 # - add dilandau.eu support
