@@ -62,7 +62,7 @@ def download_to_path(songs, path="~/Downloads")
 			saved_file.write(read_file.read)
 		end
 	end
-rescue OpenURI::HTTPError => error
+rescue => error
 	puts error.message, "Trying next song match..."
 	retry
 else
@@ -135,3 +135,4 @@ end
 # - add dilandau.eu support
 # - streaming support
 # - switch up search term order
+# - check validity of mp3, retry if invalid
