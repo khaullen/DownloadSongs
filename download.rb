@@ -54,7 +54,7 @@ end
 def download(songs)
 	song = songs.shift
 	raise(ArgumentError, "No matches left to try") if song.nil?
-	puts "Song match: #{song[:name]}\nURL: #{song[:uri]}\nQuality: #{song[:quality]}kbps\nTime: #{song[:time]} seconds\nSize: #{song[:size]} mb"
+	puts "Song match: #{song[:name]}\nURL: #{song[:uri]}\nQuality: #{song[:quality]}kbps\nTime: #{song[:time]/60}:#{song[:time]%60}\nSize: #{song[:size]} mb"
 	mp3_file = File.expand_path(song[:name] << ".mp3", $options[:path])
 	File.open(mp3_file, "wb") do |saved_file|
 		puts "Downloading to #{mp3_file}..."
