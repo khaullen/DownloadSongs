@@ -31,7 +31,7 @@ def parse_mp3_skull(search_term)
 	puts "Parsing HTML..." if $options[:verbose]
 	array = doc.css('div#song_html').map do |song_element|
 		hash = {}
-		hash[:name] = song_element.css('#right_song div b').first.content.chomp(" mp3")
+		hash[:name] = song_element.css('#right_song div b').first.content.encode('UTF-16', :invalid => :replace).encode('UTF-8').chomp(" mp3")
 		hash[:uri] = URI.escape(song_element.css('#right_song a').first['href'])
 		hash[:extra_words] = hash[:name].scan(/\b/).size/2 - search_term.split("_").count
 		hash.merge(parse_left_content(song_element.css('div.left').first.content))
@@ -125,7 +125,6 @@ end
 # - output download info to log file
 # - add support for download progress viewer
 # - restructure code, get rid of global variables
-# - recover from errors and download next song in array
 # - accept argument for download path using ARGV
 # - add threads for concurrent downloads?
 # - add songs to iTunes playlist
