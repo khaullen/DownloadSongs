@@ -59,7 +59,7 @@ downloader = Downloader.new(ARGV, options)
 downloader.match_songs
 last_song = downloader.download_songs
 
-if options[:play]
+if options[:play] && last_song.file_path
 	program = case `printf $(command -v afplay >/dev/null 2>&1)$?`
 						when "0"; "afplay"
 						else "open"
@@ -67,7 +67,7 @@ if options[:play]
 	if program == 'afplay'
 		puts "Press Control-C to stop playback"
 		begin
-			`#{program} "#{last_song.mp3_file}"`
+			`#{program} "#{last_song.file_path}"`
 		rescue Interrupt
 			puts
 			exit(0)
@@ -88,5 +88,3 @@ end
 # - check validity of mp3, retry if invalid
 # - test matches for equality (by URI, or better yet by accurate file size?)
 # - improve match.fit calculation (look for keywords live, cover, remix, etc; add the)
-# bug - @matches don't seem to be sorting by quality when quality is nil
-# bug - need to error out if no matches found

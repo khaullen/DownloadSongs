@@ -12,7 +12,7 @@ class Match
 end
 
 class Song
-	attr_reader :search_terms, :matches, :log, :mp3_file
+	attr_reader :search_terms, :matches, :log, :file_path
 
 	def initialize(str, opts = {})
 		@search_terms = self.class.parse_input_string(str)
@@ -37,8 +37,8 @@ class Song
 		@matches.find do |match|
 			begin
 				puts match.description
-				@mp3_file = File.expand_path(match.name << ".mp3", path)
-				File.open(@mp3_file, "wb") do |saved_file|
+				mp3_file = File.expand_path(match.name << ".mp3", path)
+				File.open(mp3_file, "wb") do |saved_file|
 					puts "Downloading to #{@mp3_file}..."
 					open(match.uri, 'rb') do |read_file|
 						saved_file.write(read_file.read)
@@ -48,7 +48,8 @@ class Song
 				puts error.message, "Trying next song match..."
 				false
 			else
-				@log.info "\"url\":\"#{match.uri}\",\"file\":\"#{@mp3_file}\"" if @log
+				@file_path = mp3_file
+				@log.info "\"url\":\"#{match.uri}\",\"file\":\"#{@file_path}\"" if @log
 				return self
 			end
 		end

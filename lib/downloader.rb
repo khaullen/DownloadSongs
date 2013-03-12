@@ -16,7 +16,7 @@ class Downloader
 			@sources.each do |source|
 				song.find_matches(source)
 			end
-			$stderr << "No matches found for #{song}, bummer" if song.matches.empty?
+			$stderr << "No matches found for #{song}, bummer\n" if song.matches.empty?
 		end
 	end
 	
