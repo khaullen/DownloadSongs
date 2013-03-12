@@ -7,7 +7,7 @@ class Match
 	include Comparable
 	def <=>(other)
 		return nil unless other.instance_of?(self.class)
-		self.fit <=> other.fit
+		[other.fit, other.quality || 0] <=> [@fit, @quality || 0]
 	end
 end
 
@@ -26,7 +26,10 @@ class Song
 	
 	def find_matches(source)
 		matches = source.find_matches(@search_terms)
-		matches.each { |match| match.fit = match.name.scan(/\b/).size/2 - @search_terms.count }
+		matches.each do |match| 
+			match_l, search_l = match.name.scan(/\b/).size/2.0, @search_terms.count
+			match.fit = 1 - (match_l - search_l)/match_l
+		end
 		@matches = (@matches + matches).sort!
 	end
 	

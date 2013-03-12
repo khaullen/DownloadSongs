@@ -3,7 +3,7 @@ require 'nokogiri'
 require 'match'
 
 module Source
-	# Every source object must implement the method find_matches(search_terms) that returns an array of Match objects
+# Every source object must implement the method find_matches(search_terms) that returns an array of Match objects
 	
 	def self.check_connectivity
 	
