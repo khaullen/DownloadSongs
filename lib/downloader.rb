@@ -26,4 +26,21 @@ class Downloader
 		end		
 		@songs.last
 	end
+	
+	def match_and_download
+		@songs.each do |song|
+			t = Thread.new do
+				source_threads = []
+				@sources.each do |source|
+					source_threads << Thread.new do
+						song.find_matches(source)
+					end
+				end
+				source_threads.each { |s_thread| s_thread.join }
+				song.download_to_path(@download_path)
+			end
+		end
+		Thread.list.each { |t| t.join unless t == Thread.main or t == Thread.current}
+		@songs.last
+	end
 end

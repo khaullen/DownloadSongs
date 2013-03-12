@@ -56,8 +56,9 @@ puts "Minimum quality: #{options[:quality]}kbps" if options[:quality] > 0
 puts "Search result for \"#{ARGV.last}\" will begin playing after download is complete" if options[:play]
 
 downloader = Downloader.new(ARGV, options)
-downloader.match_songs
-last_song = downloader.download_songs
+#downloader.match_songs
+#last_song = downloader.download_songs
+last_song = downloader.match_and_download
 
 if options[:play] && last_song.file_path
 	program = case `printf $(command -v afplay >/dev/null 2>&1)$?`
@@ -80,9 +81,8 @@ end
 
 # TODO
 # - add support for download progress viewer
-# - add threads for concurrent downloads?
 # - add songs to iTunes playlist
-# - add dilandau.eu support
+# - add dilandau.eu, tinysong as source
 # - streaming support
 # - switch up search term order
 # - check validity of mp3, retry if invalid
