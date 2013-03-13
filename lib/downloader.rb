@@ -3,12 +3,14 @@ require 'source'
 require 'logger'
 
 class Downloader
+	@@source_classes = [Source::MP3Skull]
+
 	def initialize(songs, options)
 		@log = Logger.new(options[:log])
 		@log.datetime_format = "%Y-%m-%d %H:%M:%S"
 		@download_path = options[:path]
 		@songs = songs.map { |str| Song.new(str, :log => @log) }
-		@sources = [Source::MP3Skull].map { |klass| klass.new(options) }
+		@sources = @@source_classes.map { |klass| klass.new(options) }
 	end
 	
 	def match_songs
