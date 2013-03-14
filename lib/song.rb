@@ -18,6 +18,7 @@ class Song
 		@search_terms = self.class.parse_input_string(str)
 		@matches = []
 		@log = opts[:log]
+		@lock = Mutex.new
 	end
 	
 	def self.parse_input_string(string)
@@ -30,7 +31,9 @@ class Song
 			match_l, search_l = match.name.scan(/\b/).size/2.0, @search_terms.count
 			match.fit = 1 - (match_l - search_l)/match_l
 		end
-		@matches = (@matches + matches).sort!
+		@lock.synchronize {
+			@matches = (@matches + matches).sort!
+		}
 	end
 	
 	def download_to_path(path)
