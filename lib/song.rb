@@ -49,7 +49,7 @@ class Song
 				end
 			rescue => error
 				puts error.message, "Trying next song match..."
-				File.delete(mp3_file) if File.exists(mp3_file)
+				File.delete(mp3_file) if File.exists?(mp3_file)
 				false
 			else
 				@file_path = mp3_file
