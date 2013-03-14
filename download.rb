@@ -88,3 +88,5 @@ end
 # - check validity of mp3, retry if invalid
 # - test matches for equality (by URI, or better yet by accurate file size?)
 # - improve match.fit calculation (look for keywords live, cover, remix, etc; add the)
+# - create log file if it doesn't already exist
+# - expand file path passed in for log

@@ -37,7 +37,7 @@ class Song
 	end
 	
 	def download_to_path(path)
-		@matches.find do |match|
+		m = @matches.find do |match|
 			begin
 				puts match.description
 				mp3_file = File.expand_path(match.name << ".mp3", path)
@@ -57,6 +57,7 @@ class Song
 				return self
 			end
 		end
+		printf "No matches left to try for #{@search_terms.join(" ")}, sorry brah\n" if m.nil?
 	end
 	
 	def ==(s)
