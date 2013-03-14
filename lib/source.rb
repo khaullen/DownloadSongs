@@ -17,8 +17,8 @@ module Source
 		
 		def find_matches(search_terms)
 			Source.check_connectivity
-			# try regular search string, reverse if no results
-			parse_mp3_skull(search_string(search_terms))
+			matches = parse_mp3_skull(search_string(search_terms))
+			matches.empty? ? parse_mp3_skull(search_string(search_terms, true)) : matches
 		end
 
 		private

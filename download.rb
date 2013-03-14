@@ -85,8 +85,6 @@ end
 # - add songs to iTunes playlist
 # - add dilandau.eu, tinysong as source
 # - streaming support
-# - switch up search term order
 # - check validity of mp3, retry if invalid
 # - test matches for equality (by URI, or better yet by accurate file size?)
 # - improve match.fit calculation (look for keywords live, cover, remix, etc; add the)
-# - implement lock on @matches song instance variable
