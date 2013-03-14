@@ -39,7 +39,7 @@ class Song
 				puts match.description
 				mp3_file = File.expand_path(match.name << ".mp3", path)
 				File.open(mp3_file, "wb") do |saved_file|
-					puts "Downloading to #{mp3_file}..."
+					printf "Downloading to #{mp3_file}...\n"
 					open(match.uri, 'rb') do |read_file|
 						saved_file.write(read_file.read)
 					end

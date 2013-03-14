@@ -6,7 +6,7 @@ module Source
 # Every source object must implement the method find_matches(search_terms) that returns an array of Match objects
 	
 	def self.check_connectivity
-	
+		#check specific host
 	end
 
 	class MP3Skull
@@ -28,7 +28,7 @@ module Source
 		end
 	
 		def results(search_string)
-			puts "Downloading search results for #{search_string}..." if @verbose
+			printf "Downloading search results for #{search_string}...\n" if @verbose
 			uri = "http://mp3skull.com/mp3/#{search_string}.html"
 			begin
 				Nokogiri::HTML(open(uri))
@@ -39,7 +39,7 @@ module Source
 
 		def parse_mp3_skull(search_string)
 			doc = results(search_string)
-			puts "Parsing HTML..." if @verbose
+			printf "Parsing HTML for #{search_string}...\n" if @verbose
 			array = doc.css('div#song_html').map do |song_element|
 				name = song_element.css('#right_song div b').first.content.encode('UTF-16', :invalid => :replace).encode('UTF-8').chomp(" mp3")
 				uri = URI.escape(song_element.css('#right_song a').first['href'])
