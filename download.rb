@@ -55,10 +55,11 @@ puts "Logging output to #{options[:log]}" if options[:verbose]
 puts "Minimum quality: #{options[:quality]}kbps" if options[:quality] > 0
 puts "Search result for \"#{ARGV.last}\" will begin playing after download is complete" if options[:play]
 
+# downloader.match_songs returns a thread, block it to wait for all songs to match
+
 downloader = Downloader.new(ARGV, options)
-#downloader.match_songs
-#last_song = downloader.download_songs
-last_song = downloader.match_and_download
+match_thread = downloader.match_songs
+last_song = downloader.download_songs
 
 if options[:play] && last_song.file_path
 	program = case `printf $(command -v afplay >/dev/null 2>&1)$?`
@@ -88,3 +89,4 @@ end
 # - check validity of mp3, retry if invalid
 # - test matches for equality (by URI, or better yet by accurate file size?)
 # - improve match.fit calculation (look for keywords live, cover, remix, etc; add the)
+# - implement lock on @matches song instance variable

@@ -14,35 +14,35 @@ class Downloader
 	end
 	
 	def match_songs
-		@songs.each do |song|
-			@sources.each do |source|
-				song.find_matches(source)
+		@queue = Queue.new
+		Thread.new do
+			song_threads = []
+			@songs.each do |song|
+				song_threads << Thread.new do
+					source_threads = []
+					@sources.each do |source|
+						source_threads << Thread.new do
+							song.find_matches(source)
+						end
+					end
+					source_threads.each { |t| t.join }
+					$stderr << "No matches found for #{song}, bummer\n" if song.matches.empty?
+					@queue << song
+				end
 			end
-			$stderr << "No matches found for #{song}, bummer\n" if song.matches.empty?
+			song_threads.each { |t| t.join }
+			@queue << nil
 		end
 	end
 	
 	def download_songs
-		@songs.each do |song|
-			song.download_to_path(@download_path)
-		end		
-		@songs.last
-	end
-	
-	def match_and_download
-		@songs.each do |song|
-			t = Thread.new do
-				source_threads = []
-				@sources.each do |source|
-					source_threads << Thread.new do
-						song.find_matches(source)
-					end
-				end
-				source_threads.each { |s_thread| s_thread.join }
-				song.download_to_path(@download_path)
+		download_threads = []
+		while song = @queue.pop
+			download_threads << Thread.new(song) do |s|
+				s.download_to_path(@download_path)
 			end
 		end
-		Thread.list.each { |t| t.join unless t == Thread.main or t == Thread.current}
+		download_threads.each { |t| t.join }
 		@songs.last
 	end
 end
