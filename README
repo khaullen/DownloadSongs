@@ -5,6 +5,7 @@ Enter one or multiple search queries and the script will fetch matching song
 $ ./download.rb -h
 Usage: download.rb [options] song1 song2 ...
     -p, --play                       Play song after downloading
+    -o, --open                       Open song after downloading
     -q, --quality [KBPS]             Minimum quality mp3 in KBPS
     -v, --verbose                    Output more information
     -l, --logfile FILE               Write log to FILE
