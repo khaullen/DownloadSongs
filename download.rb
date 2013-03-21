@@ -23,6 +23,11 @@ OptionParser.new do |opts|
 		options[:play] = true
 	end
 	
+	options[:open] = false
+	opts.on( '-o', '--open', 'Open song after downloading' ) do
+		options[:open] = true
+	end
+	
 	options[:quality] = 0
 	opts.on( '-q', '--quality [KBPS]', Integer, 'Minimum quality mp3 in KBPS' ) do |kbps|
 		options[:quality] = kbps || 160
@@ -77,8 +82,10 @@ if options[:play] && last_song.file_path
 	end
 end
 
-
-
+if options[:open] && last_song.file_path
+	puts 'Opening the file...'
+	`open "#{last_song.file_path}"`
+end
 
 # TODO
 # - add support for download progress viewer
