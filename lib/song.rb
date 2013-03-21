@@ -61,7 +61,7 @@ class Song
 	end
 	
 	def ==(s)
-		s.is_a? Song && @search_terms.sort == s.search_terms.sort
+		s.is_a?(Song) && @search_terms.sort == s.search_terms.sort
 	end
 	
 	def to_s
