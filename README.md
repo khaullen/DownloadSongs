@@ -1,7 +1,10 @@
-A command-line tool for downloading mp3 files from the INTERNET
-Enter one or multiple search queries and the script will fetch matching song
+# DownloadSongs
 
+#### A ruby command-line tool for downloading mp3 files from the *INTERNET*
 
+Enter one or multiple search queries and the script will fetch a matching song.  For each search query passed in, the script finds and downloads the highest quality matching song.
+
+```
 $ ./download.rb -h
 Usage: download.rb [options] song1 song2 ...
     -p, --play                       Play song after downloading
@@ -11,6 +14,4 @@ Usage: download.rb [options] song1 song2 ...
     -l, --logfile FILE               Write log to FILE
     -d, --path PATH                  Save mp3 file to PATH
     -h, --help                       Display help
-
-
-For each search query passed in, the script searches the world wide web and downloads the highest quality matching song
+```
